@@ -66,7 +66,7 @@ $ oc secrets link default <secret-name> --for=pull
 **7. Use the Template to Create your Application Objects**
 
 ```bash
-$ oc process -f <template-name> | oc create -f -
+$ oc process -f ./openshift-dev.yml --param-file=./openshift-dev.properties | oc create -f -
 ```
 
 *Assuming there are no issues with the template, your application objects should begin deploying into your current project*
