@@ -55,7 +55,15 @@ $ oc project <existing-project-name>
 $ oc create template -f ./openshift-dev.yml
 ```
 
-**6. Use the Template to Create your Application Objects**
+**6. _(Optional)_ Create Docker Registry Secret & Link to Service Account**
+_Only needed if pulling images from a private Docker Registry_
+
+```bash
+$ oc create secret docker-registry <secret-name> --docker-username "<registry-username>" --docker-password "<registry-password"
+$ oc secrets link default <secret-name> --for=pull
+```
+
+**7. Use the Template to Create your Application Objects**
 
 ```bash
 $ oc process -f <template-name> | oc create -f -
