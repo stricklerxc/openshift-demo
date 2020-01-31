@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: ocp-demo-spring-pet-clinic-template
+  name: ${APP_NAME}-template
 
 objects:
   # Service
@@ -9,9 +9,9 @@ objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: "ocp-demo-spring-pet-clinic"
+      name: ${APP_NAME}
       labels:
-        app: "ocp-demo-spring-pet-clinic"
+        app: ${APP_NAME}
     spec:
       ports:
         - name: 8080-tcp
@@ -19,8 +19,8 @@ objects:
           port: 8080
           targetPort: 8080
       selector:
-        app: "ocp-demo-spring-pet-clinic"
-        deploymentconfig: "ocp-demo-spring-pet-clinic"
+        app: ${APP_NAME}
+        deploymentconfig: ${APP_NAME}
       sessionAffinity: None
 
   # Route
@@ -28,15 +28,15 @@ objects:
   - kind: Route
     apiVersion: v1
     metadata:
-      name: "ocp-demo-spring-pet-clinic"
-      namespace: "ocp-demo"
+      name: ${APP_NAME}
+      namespace: ${PROJECT_NAME}
       labels:
-        app: "ocp-demo-spring-pet-clinic"
+        app: ${APP_NAME}
     spec:
-      host: "ocp-demo-spring-pet-clinic.127.0.0.1.nip.io"
+      host: "${APP_NAME}-${PROJECT_NAME}.${DOMAIN}"
       to:
         kind: Service
-        name: "ocp-demo-spring-pet-clinic"
+        name: ${APP_NAME}
         weight: 100
       port:
         targetPort: 8080-tcp
@@ -50,16 +50,16 @@ objects:
   - kind: ImageStream
     apiVersion: v1
     metadata:
-      name: "ocp-demo-spring-pet-clinic"
-      namespace: "ocp-demo"
+      name: ${APP_NAME}
+      namespace: ${PROJECT_NAME}
     spec:
-      dockerImageRepository: "stricklerxc/demo:latest"
+      dockerImageRepository: ${DOCKER_REPO}
       tags:
         -
           name: latest
           from:
             kind: DockerImage
-            name: "stricklerxc/demo:latest"
+            name: "${DOCKER_REPO}:latest"
       importPolicy:
         insecure: true
 
@@ -68,26 +68,26 @@ objects:
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
-      name: "ocp-demo-spring-pet-clinic"
-      namespace: "ocp-demo"
+      name:"${APP_NAME}
+      namespace: ${PROJECT_NAME}
       labels:
-        app: "ocp-demo-spring-pet-clinic"
+        app: ${APP_NAME}
     spec:
       replicas: 1
       selector:
-        app: "ocp-demo-spring-pet-clinic"
-        deploymentconfig: "ocp-demo-spring-pet-clinic"
+        app: ${APP_NAME}
+        deploymentconfig: ${APP_NAME}
       strategy:
         type: Rolling
       template:
         metadata:
           labels:
-            app: "ocp-demo-spring-pet-clinic"
-            deploymentconfig: "ocp-demo-spring-pet-clinic"
+            app: ${APP_NAME}
+            deploymentconfig: ${APP_NAME}
         spec:
           containers:
-            - name: "ocp-demo-spring-pet-clinic"
-              image: "stricklerxc/demo:latest"
+            - name: ${APP_NAME}
+              image: "${DOCKER_REPO}:latest"
               ports:
                 - containerPort: 8080
                   protocol: TCP
@@ -105,8 +105,19 @@ objects:
             imageChangeParams:
               automatic: true
               containerNames:
-                - "ocp-demo-spring-pet-clinic"
+                - ${APP_NAME}
               from:
                 kind: ImageStreamTag
-                namespace: "ocp-demo"
-                name: "ocp-demo-spring-pet-clinic:latest"
+                namespace: ${PROJECT_NAME}
+                name: "${APP_NAME}:latest"
+
+parameters:
+  - name: PROJECT_NAME
+    description: "The project namespace to create resources in"
+  - name: APP_NAME
+    description: "The app name to assign to resources"
+  - name: DOCKER_REPO
+    description: "The Docker Registry to use for the image stream"
+  - name: DOMAIN
+    description: "Domain for application routes (defaults to wildcard DNS pointing to localhost)"
+    value: "127.0.0.1.nip.io"
