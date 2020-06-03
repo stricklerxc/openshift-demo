@@ -5,10 +5,10 @@ pipeline {
         stage('Setup') {
             steps {
                 // Run unit tests
-                sh "./mvnw clean test"
+                // sh "./mvnw clean test"
 
                 // Build docker image
-                sh "docker build -f Dockerfile -t stricklerxc/demo:latest"
+                sh "docker build -f Dockerfile -t stricklerxc/demo:latest ."
 
                 // Push docker image to DockerHub
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
