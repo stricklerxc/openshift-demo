@@ -18,9 +18,13 @@ pipeline {
                     """
                 }
 
+                script {
+                    def ocpConfig = readFile('openshift-dev.yml')
+                }
+
                 // Deploy openshift template using Openshift Jenkins Plugin
-                openshiftDeploy(
-                    depCfg: 'openshift-dev.yml',
+                openshiftCreateResource(
+                    jsonyaml: ocpConfig,
                     apiURL: 'https://192.168.1.151:8443',
                     namespace: 'local-dev',
                     authToken: 'g2hrOy-f3lIqf-fNtvf4HGjtke4nAVaFQrGfIkGKQKk'
