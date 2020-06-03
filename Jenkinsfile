@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                // Run unit tests
-                sh "./mvnw clean test"
+                // Package the application
+                sh "./mvnw clean package"
 
                 // Build docker image
                 sh "docker build -f Dockerfile -t stricklerxc/demo:latest ."
