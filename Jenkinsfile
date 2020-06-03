@@ -21,7 +21,7 @@ pipeline {
                 // Deploy openshift template using Openshift Jenkins Plugin
                 openshiftDeploy(
                     depCfg: 'openshift-dev.yml',
-                    apiURL: 'https://127.0.0.1:8443',
+                    apiURL: 'https://192.168.1.151:8443',
                     namespace: 'local-dev',
                     authToken: 'g2hrOy-f3lIqf-fNtvf4HGjtke4nAVaFQrGfIkGKQKk'
                 )
